@@ -42,7 +42,7 @@ echo "Running Doom install..."
 if command -v fish &>/dev/null; then
   echo "Configuring Fish shell path..."
   # We use -U (universal) so it persists instantly across all shells
-  fish -c "fish_add_path $HOME/.config/emacs/bin"
+  fish -c "fish_add_path $HOME/.config/emacs/bin" || true
   echo "✓ Added ~/.config/emacs/bin to Fish path."
 fi
 
