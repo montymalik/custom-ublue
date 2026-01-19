@@ -25,7 +25,7 @@ RUN rpm-ostree install \
     unzip \
     alacritty \
     kitty \
-    fd \
+    fd-find \
     ripgrep \
     emacs \
     freerdp \
