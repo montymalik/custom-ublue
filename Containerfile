@@ -52,6 +52,8 @@ RUN rpm-ostree install \
     gcc-c++ \
     make \
     cmake \
+    rust \
+    cargo \
     # Remote desktop tools
     remmina \
     remmina-plugins-rdp \
@@ -59,10 +61,7 @@ RUN rpm-ostree install \
     remmina-plugins-exec \
     remmina-plugins-secret \
     freerdp \
-    # System utilities
-    systemd-homed \
     # Shell utilities
-    starship \
     matugen \
     # Certificate authority tools
     step-cli \
@@ -71,6 +70,11 @@ RUN rpm-ostree install \
     jetbrains-mono-fonts-all \
     google-noto-emoji-fonts \
     && rpm-ostree cleanup -m
+
+# ===== INSTALL STARSHIP PROMPT =====
+# Starship is not in repos, so we install from GitHub releases
+RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes && \
+    rm -rf /root/.cache
 
 # ===== COPY CONFIGURATION FILES =====
 # Copy all config files to a system location
