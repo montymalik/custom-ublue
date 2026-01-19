@@ -66,8 +66,7 @@ install-chrome-rpm:
 
 # Install Doom Emacs
 install-doom:
-    chmod +x /usr/share/custom-ublue/scripts/install-doom.sh
-    /usr/share/custom-ublue/scripts/install-doom.sh
+    bash /usr/share/custom-ublue/scripts/install-doom.sh
 
 # Sync Doom Env (Run after updates)
 doom-sync:
@@ -77,8 +76,7 @@ doom-sync:
 
 # Install LazyVim
 install-lazyvim:
-    chmod +x /usr/share/custom-ublue/scripts/install-lazyvim.sh
-    /usr/share/custom-ublue/scripts/install-lazyvim.sh
+    bash /usr/share/custom-ublue/scripts/install-lazyvim.sh
 
 # Install both editors
 install-editors: install-doom install-lazyvim
