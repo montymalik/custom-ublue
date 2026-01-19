@@ -10,13 +10,6 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/danklinux/repo/f
 RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/avengemedia-dms.repo
 
-RUN printf '[google-chrome]\n\
-name=google-chrome\n\
-baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64\n\
-enabled=1\n\
-gpgcheck=1\n\
-gpgkey=https://dl.google.com/linux/linux_signing_key.pub\n' > /etc/yum.repos.d/google-chrome.repo
-
 RUN printf '[smallstep]\n\
 name=Smallstep\n\
 baseurl=https://packages.smallstep.com/stable/fedora/\n\
@@ -25,9 +18,9 @@ repo_gpgcheck=0\n\
 gpgcheck=1\n\
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
-# ===== 2. INSTALL PACKAGES (Ordered by Stability) =====
+# ===== 2. INSTALL PACKAGES =====
 
-# Batch 1: Core Fedora Packages (Safe, rarely break)
+# Batch 1: Core GUI & Fonts
 RUN rpm-ostree install \
     unzip \
     alacritty \
@@ -37,7 +30,7 @@ RUN rpm-ostree install \
     google-noto-emoji-fonts \
     && rpm-ostree cleanup -m
 
-# Batch 2: Remmina (Split to isolate deps)
+# Batch 2: Remmina
 RUN rpm-ostree install \
     remmina \
     remmina-plugins-rdp \
@@ -46,15 +39,10 @@ RUN rpm-ostree install \
     remmina-plugins-secret \
     && rpm-ostree cleanup -m
 
-# Batch 3: Google Chrome (Proprietary, frequent updates)
-RUN rpm-ostree install google-chrome-stable && rpm-ostree cleanup -m
-
-# Batch 4: Smallstep CLI ONLY
-# REMOVED: step-ca (This was causing the crash)
+# Batch 3: Smallstep CLI (Client only)
 RUN rpm-ostree install step-cli && rpm-ostree cleanup -m
 
-# Batch 5: Niri & COPRs
-# REMOVED: matugen (Installing manually below)
+# Batch 4: Niri & COPRs
 RUN rpm-ostree install \
     niri \
     quickshell-git \
