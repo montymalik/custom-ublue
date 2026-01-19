@@ -73,11 +73,13 @@ RUN rpm-ostree install \
 
 # ===== INSTALL STARSHIP PROMPT =====
 # Download and install starship binary from GitHub releases
-RUN STARSHIP_VERSION="1.20.1" && \
+RUN mkdir -p /usr/local/bin && \
+    STARSHIP_VERSION="1.20.1" && \
     curl -sL "https://github.com/starship/starship/releases/download/v${STARSHIP_VERSION}/starship-x86_64-unknown-linux-musl.tar.gz" \
     -o /tmp/starship.tar.gz && \
     tar -xzf /tmp/starship.tar.gz -C /tmp && \
-    install -m 755 /tmp/starship /usr/local/bin/starship && \
+    mv /tmp/starship /usr/local/bin/starship && \
+    chmod 755 /usr/local/bin/starship && \
     rm -rf /tmp/starship*
 
 # ===== COPY CONFIGURATION FILES =====
