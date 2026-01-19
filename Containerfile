@@ -25,6 +25,8 @@ RUN rpm-ostree install \
     unzip \
     alacritty \
     kitty \
+    fd \
+    ripgrep \
     emacs \
     freerdp \
     google-noto-emoji-fonts \
