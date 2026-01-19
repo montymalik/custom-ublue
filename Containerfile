@@ -10,9 +10,6 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/danklinux/repo/f
 RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/avengemedia-dms.repo
 
-RUN curl -L https://copr.fedorainfracloud.org/coprs/cheverola/nerd-fonts/repo/fedora-$(rpm -E %fedora)/cheverola-nerd-fonts-fedora-$(rpm -E %fedora).repo \
-    -o /etc/yum.repos.d/cheverola-nerd-fonts.repo
-
 # ===== ADD GOOGLE CHROME REPOSITORY =====
 RUN printf '[google-chrome]\n\
 name=google-chrome\n\
@@ -30,25 +27,15 @@ repo_gpgcheck=0\n\
 gpgcheck=1\n\
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
-RUN rpm-ostree override remove waybar
-
 # ===== INSTALL PACKAGES =====
+# Added 'unzip' for font extraction
 RUN rpm-ostree install \
+    unzip \
     google-chrome-stable \
     niri \
     quickshell-git \
     dms \
     fuzzel \
-    # --- FONTS ---
-    # 1. Nerd Fonts (Patched with icons)
-    nerd-fonts-jetbrains-mono \
-    nerd-fonts-fira-code \
-    nerd-fonts-hack \
-    nerd-fonts-symbols \
-    cascadia-code-fonts \
-    fira-code-fonts \
-    jetbrains-mono-fonts-all \
-    google-noto-emoji-fonts \
     alacritty \
     kitty \
     emacs \
@@ -64,25 +51,19 @@ RUN rpm-ostree install \
     google-noto-emoji-fonts \
     && rpm-ostree cleanup -m
 
-# ===== COPY CONFIGURATION FILES =====
-# This copies your entire local 'config/' folder to the image.
-# Ensure your local folder structure matches:
-# config/
-#   ├── alacritty/
-#   │   ├── alacritty.toml
-#   │   ├── dank-theme.toml
-#   │   └── catppuccin-macchiato.toml
-#   ├── kitty/
-#   │   ├── kitty.conf
-#   │   ├── dank-tabs.conf
-#   │   ├── dank-theme.conf
-#   │   └── catppuccin-macchiato.conf
-#   ├── fuzzel/
-#   │   └── fuzzel.ini
-#   └── niri/ ...
-COPY config /usr/share/custom-ublue
+# ===== INSTALL NERD FONTS MANUALLY =====
+# Downloads the latest JetBrains Mono Nerd Font directly to the system fonts folder.
+# This avoids broken COPR repos and ensures you have the patched version.
+RUN mkdir -p /usr/share/fonts/nerd-fonts && \
+    curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
+    unzip -o /tmp/JetBrainsMono.zip -d /usr/share/fonts/nerd-fonts && \
+    rm /tmp/JetBrainsMono.zip && \
+    fc-cache -fv
 
+# ===== COPY CONFIGURATION FILES =====
+COPY config /usr/share/custom-ublue
 COPY scripts /usr/share/custom-ublue/scripts
+
 RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 
 COPY 60-custom.just /usr/share/ublue-os/just/60-custom.just
