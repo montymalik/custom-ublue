@@ -16,6 +16,10 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-
 RUN curl -L https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/lazygit.repo
 
+# NEW: Tailscale Official Repo (Stable)
+RUN curl -L https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
+    -o /etc/yum.repos.d/tailscale.repo
+
 # NEW: Yazi Repo (Unofficial COPR)
 RUN curl -L https://copr.fedorainfracloud.org/coprs/lihaohong/yazi/repo/fedora-$(rpm -E %fedora)/lihaohong-yazi-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/yazi.repo
@@ -46,6 +50,8 @@ RUN rpm-ostree install \
     emacs \
     freerdp \
     google-noto-emoji-fonts \
+    # --- NETWORKING (New) ---
+    tailscale \
     # --- CLI BLING ---
     gum \
     glow \
@@ -57,9 +63,6 @@ RUN rpm-ostree install \
     trash-cli \
     btop \
     yazi \
-    # REMOVED: eza (as requested)
-    pandoc \
-    ShellCheck \
     && rpm-ostree cleanup -m
 
 # Batch 2: Remmina
@@ -90,6 +93,23 @@ RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/downl
     find /tmp -name matugen -type f -exec mv {} /usr/bin/matugen \; && \
     chmod +x /usr/bin/matugen && \
     rm -rf /tmp/matugen*
+
+# Install ShellCheck (Static Binary)
+RUN curl -Lo /tmp/shellcheck.tar.xz https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz && \
+    tar -xf /tmp/shellcheck.tar.xz -C /tmp && \
+    mv /tmp/shellcheck-v0.10.0/shellcheck /usr/bin/shellcheck && \
+    chmod +x /usr/bin/shellcheck && \
+    rm -rf /tmp/shellcheck*
+
+# Install Pandoc (Static Binary)
+RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-linux-amd64.tar.gz && \
+    tar -xzf /tmp/pandoc.tar.gz -C /tmp && \
+    mv /tmp/pandoc-3.1.11.1/bin/pandoc /usr/bin/pandoc && \
+    chmod +x /usr/bin/pandoc && \
+    # Install manpages
+    mkdir -p /usr/share/man/man1 && \
+    mv /tmp/pandoc-3.1.11.1/share/man/man1/pandoc.1 /usr/share/man/man1/ && \
+    rm -rf /tmp/pandoc*
 
 # Install Nerd Fonts (Manual)
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
