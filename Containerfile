@@ -1,6 +1,8 @@
 FROM ghcr.io/ublue-os/bluefin-dx:latest
 
 # ===== 1. ADD REPOSITORIES =====
+
+# --- Core Desktop Components ---
 RUN curl -L https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-$(rpm -E %fedora)/yalter-niri-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/yalter-niri.repo
 
@@ -10,11 +12,14 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/danklinux/repo/f
 RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/avengemedia-dms.repo
 
-# NEW: LazyGit Repo
+# --- CLI Tools ---
 RUN curl -L https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/lazygit.repo
 
-# NEW: Charm Bracelet Repo (Gum, Glow)
+# NEW: Yazi Repo (Unofficial COPR)
+RUN curl -L https://copr.fedorainfracloud.org/coprs/lihaohong/yazi/repo/fedora-$(rpm -E %fedora)/lihaohong-yazi-fedora-$(rpm -E %fedora).repo \
+    -o /etc/yum.repos.d/yazi.repo
+
 RUN printf '[charm]\n\
 name=Charm\n\
 baseurl=https://repo.charm.sh/yum/\n\
@@ -46,13 +51,13 @@ RUN rpm-ostree install \
     glow \
     atuin \
     lazygit \
-    eza \
     bat \
     zoxide \
     tealdeer \
     trash-cli \
     btop \
     yazi \
+    # REMOVED: eza (as requested)
     && rpm-ostree cleanup -m
 
 # Batch 2: Remmina
