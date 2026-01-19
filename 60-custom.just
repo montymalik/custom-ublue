@@ -22,7 +22,32 @@ install-lazyvim:
 
 # Install both Doom and LazyVim
 install-editors: install-doom install-lazyvim
+  
+# Install Starship prompt
+install-starship:
+    #!/usr/bin/bash
+    if ! command -v starship &> /dev/null; then
+        echo "Installing Starship..."
+        curl -sS https://starship.rs/install.sh | sh -s -- --yes
+        # Add to bash
+        if ! grep -q "starship init bash" ~/.bashrc 2>/dev/null; then
+            echo 'eval "$(starship init bash)"' >> ~/.bashrc
+        fi
+        # Add to zsh if exists
+        if [ -f ~/.zshrc ]; then
+            if ! grep -q "starship init zsh" ~/.zshrc; then
+                echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+            fi
+        fi
+        echo "✓ Starship installed"
+    else
+        echo "Starship already installed"
+        starship --version
+    fi
 
-# Setup everything
-setup-all: install-dotfiles install-editors
+# Update the setup-all recipe
+setup-all: install-dotfiles install-editors install-starship
+    echo ""
     echo "All configurations installed!"
+    echo ""
+    echo "Restart your terminal to see the new starship prompt!"
