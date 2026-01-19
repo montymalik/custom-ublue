@@ -1,5 +1,4 @@
-# Custom Universal Blue Image with GNOME and Niri
-FROM ghcr.io/ublue-os/silverblue-main:latest
+FROM ghcr.io/ublue-os/bluefin-dx:latest
 
 # ===== ADD COPR REPOSITORIES =====
 RUN curl -L https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-$(rpm -E %fedora)/yalter-niri-fedora-$(rpm -E %fedora).repo \
@@ -20,28 +19,15 @@ repo_gpgcheck=0\n\
 gpgcheck=1\n\
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
-# ===== INSTALL ALL PACKAGES =====
+# ===== INSTALL PACKAGES =====
 RUN rpm-ostree install \
     niri \
     quickshell-git \
     dms \
+    fuzzel \
     alacritty \
     kitty \
     emacs \
-    neovim \
-    golang \
-    nodejs \
-    npm \
-    python3 \
-    python3-pip \
-    python3-devel \
-    git \
-    gcc \
-    gcc-c++ \
-    make \
-    cmake \
-    rust \
-    cargo \
     remmina \
     remmina-plugins-rdp \
     remmina-plugins-vnc \
@@ -51,32 +37,33 @@ RUN rpm-ostree install \
     matugen \
     step-cli \
     step-ca \
-    jetbrains-mono-fonts-all \
     google-noto-emoji-fonts \
     && rpm-ostree cleanup -m
 
 # ===== COPY CONFIGURATION FILES =====
+# This copies your entire local 'config/' folder to the image.
+# Ensure your local folder structure matches:
+# config/
+#   ├── alacritty/
+#   │   ├── alacritty.toml
+#   │   ├── dank-theme.toml
+#   │   └── catppuccin-macchiato.toml
+#   ├── kitty/
+#   │   ├── kitty.conf
+#   │   ├── dank-tabs.conf
+#   │   ├── dank-theme.conf
+#   │   └── catppuccin-macchiato.conf
+#   ├── fuzzel/
+#   │   └── fuzzel.ini
+#   └── niri/ ...
 COPY config /usr/share/custom-ublue
+
 COPY scripts /usr/share/custom-ublue/scripts
-
 RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
-
-# Copy configs to /etc/skel for new users
-RUN mkdir -p /etc/skel/.config/{niri,alacritty,kitty,nvim}
-
-COPY config/niri/config.kdl /etc/skel/.config/niri/
-COPY config/alacritty/alacritty.toml /etc/skel/.config/alacritty/
-COPY config/alacritty/dank-theme.toml /etc/skel/.config/alacritty/
-COPY config/alacritty/catppuccin-macchiato.toml /etc/skel/.config/alacritty/
-COPY config/kitty/kitty.conf /etc/skel/.config/kitty/
-COPY config/kitty/dank-tabs.conf /etc/skel/.config/kitty/
-COPY config/kitty/dank-theme.conf /etc/skel/.config/kitty/
-COPY config/kitty/catppuccin-macchiato.conf /etc/skel/.config/kitty/
-COPY config/starship/starship.toml /etc/skel/.config/starship.toml
 
 COPY 60-custom.just /usr/share/ublue-os/just/60-custom.just
 
 # ===== METADATA =====
-LABEL org.opencontainers.image.title="Custom Universal Blue - GNOME/Niri Edition"
-LABEL org.opencontainers.image.description="Universal Blue with GNOME, niri, DankMaterialShell, development tools, Smallstep CA, and pre-configured dotfiles"
+LABEL org.opencontainers.image.title="Custom Bluefin DX - Niri Edition"
+LABEL org.opencontainers.image.description="Bluefin DX with Niri, DankMaterialShell, Fuzzel, and Custom Themes"
 LABEL org.opencontainers.image.version="1.0"
