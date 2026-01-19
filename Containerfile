@@ -18,15 +18,13 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-
 
 # ===== ADD SMALLSTEP REPOSITORY =====
 # For step-ca and step-cli (certificate authority tools)
-RUN cat > /etc/yum.repos.d/smallstep.repo << 'REPO_EOF'
-[smallstep]
-name=Smallstep
-baseurl=https://packages.smallstep.com/stable/fedora/
-enabled=1
-repo_gpgcheck=0
-gpgcheck=1
-gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg
-REPO_EOF
+RUN printf '[smallstep]\n\
+name=Smallstep\n\
+baseurl=https://packages.smallstep.com/stable/fedora/\n\
+enabled=1\n\
+repo_gpgcheck=0\n\
+gpgcheck=1\n\
+gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
 # ===== INSTALL ALL PACKAGES =====
 RUN rpm-ostree install \
@@ -84,9 +82,22 @@ RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 
 # Copy configs to /etc/skel for new users
 RUN mkdir -p /etc/skel/.config/{niri,alacritty,kitty,nvim}
+
+# Niri configuration
 COPY config/niri/config.kdl /etc/skel/.config/niri/
+
+# Alacritty configurations (main + themes)
 COPY config/alacritty/alacritty.toml /etc/skel/.config/alacritty/
+COPY config/alacritty/dank-theme.toml /etc/skel/.config/alacritty/
+COPY config/alacritty/catppuccin-macchiato.toml /etc/skel/.config/alacritty/
+
+# Kitty configurations (main + themes + tabs)
 COPY config/kitty/kitty.conf /etc/skel/.config/kitty/
+COPY config/kitty/dank-tabs.conf /etc/skel/.config/kitty/
+COPY config/kitty/dank-theme.conf /etc/skel/.config/kitty/
+COPY config/kitty/catppuccin-macchiato.conf /etc/skel/.config/kitty/
+
+# Starship configuration
 COPY config/starship/starship.toml /etc/skel/.config/starship.toml
 
 # Install custom just recipes
