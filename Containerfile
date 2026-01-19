@@ -10,6 +10,18 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/danklinux/repo/f
 RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/avengemedia-dms.repo
 
+# NEW: LazyGit Repo
+RUN curl -L https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo \
+    -o /etc/yum.repos.d/lazygit.repo
+
+# NEW: Charm Bracelet Repo (Gum, Glow)
+RUN printf '[charm]\n\
+name=Charm\n\
+baseurl=https://repo.charm.sh/yum/\n\
+enabled=1\n\
+gpgcheck=1\n\
+gpgkey=https://repo.charm.sh/yum/gpg.key\n' > /etc/yum.repos.d/charm.repo
+
 RUN printf '[smallstep]\n\
 name=Smallstep\n\
 baseurl=https://packages.smallstep.com/stable/fedora/\n\
@@ -20,16 +32,27 @@ gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' >
 
 # ===== 2. INSTALL PACKAGES =====
 
-# Batch 1: Core GUI & Fonts
+# Batch 1: Core GUI, Editors & CLI Bling
 RUN rpm-ostree install \
     unzip \
+    neovim \
     alacritty \
     kitty \
-    fd-find \
-    ripgrep \
     emacs \
     freerdp \
     google-noto-emoji-fonts \
+    # --- CLI BLING ---
+    gum \
+    glow \
+    atuin \
+    lazygit \
+    eza \
+    bat \
+    zoxide \
+    tealdeer \
+    trash-cli \
+    btop \
+    yazi \
     && rpm-ostree cleanup -m
 
 # Batch 2: Remmina
@@ -41,7 +64,7 @@ RUN rpm-ostree install \
     remmina-plugins-secret \
     && rpm-ostree cleanup -m
 
-# Batch 3: Smallstep CLI (Client only)
+# Batch 3: Smallstep CLI
 RUN rpm-ostree install step-cli && rpm-ostree cleanup -m
 
 # Batch 4: Niri & COPRs
@@ -54,10 +77,9 @@ RUN rpm-ostree install \
 
 # ===== 3. MANUAL INSTALLS =====
 
-# Install Matugen (Binary)
+# Install Matugen (Manual Archive)
 RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/download/v3.1.0/matugen-3.1.0-x86_64.tar.gz && \
     tar -xzf /tmp/matugen.tar.gz -C /tmp && \
-    # Move the binary (it extracts to the root or a subfolder, this handles both)
     find /tmp -name matugen -type f -exec mv {} /usr/bin/matugen \; && \
     chmod +x /usr/bin/matugen && \
     rm -rf /tmp/matugen*

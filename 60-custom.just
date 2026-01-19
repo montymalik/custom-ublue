@@ -3,7 +3,7 @@ install-dotfiles:
     #!/usr/bin/bash
     echo "Installing dotfiles..."
     # Create directories
-    mkdir -p ~/.config/{niri,alacritty,kitty,starship,doom,fuzzel}
+    mkdir -p ~/.config/{niri,alacritty,kitty,starship,doom,fuzzel,fish/conf.d}
 
     # --- NIRI ---
     [ ! -f ~/.config/niri/config.kdl ] && cp /usr/share/custom-ublue/niri/config.kdl ~/.config/niri/
@@ -44,9 +44,21 @@ force-update-dotfiles:
     cp -f /usr/share/custom-ublue/fuzzel/fuzzel.ini ~/.config/fuzzel/
     echo "All dotfiles reset to image defaults."
 
-# Set Fish as the default shell
+# Set Fish as default shell & Configure CLI Tools (Atuin/Starship)
 set-shell-fish:
+    # 1. Set default shell
     sudo usermod -s /usr/bin/fish $USER
+    
+    # 2. Ensure config dir exists
+    mkdir -p ~/.config/fish/conf.d
+
+    # 3. Enable Atuin (Shell History)
+    echo 'atuin init fish | source' > ~/.config/fish/conf.d/atuin.fish
+    
+    # 4. Enable Starship (Prompt)
+    echo 'starship init fish | source' > ~/.config/fish/conf.d/starship.fish
+    
+    echo "Fish configured with Atuin and Starship."
 
 # Install Dev Tools via Devbox
 install-dev-tools:
@@ -64,23 +76,23 @@ install-chrome-rpm:
     sudo rpm-ostree install google-chrome-stable
     echo "Chrome layered. Please reboot."
 
-# Install Doom Emacs
+# Install Doom Emacs (Uses bash to avoid read-only errors)
 install-doom:
     bash /usr/share/custom-ublue/scripts/install-doom.sh
 
-# Sync Doom Env (Run after updates)
+# Sync Doom Env (Run after installing new system tools)
 doom-sync:
     ~/.config/emacs/bin/doom env
     ~/.config/emacs/bin/doom sync
     echo "Doom environment synced."
 
-# Install LazyVim
+# Install LazyVim (Uses bash to avoid read-only errors)
 install-lazyvim:
     bash /usr/share/custom-ublue/scripts/install-lazyvim.sh
 
 # Install both editors
 install-editors: install-doom install-lazyvim
 
-# Setup everything
+# Setup everything (The "One Command" Setup)
 setup-all: install-dotfiles set-shell-fish install-editors install-chrome
     echo "All configurations installed! Please restart your session."
