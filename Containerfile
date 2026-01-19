@@ -10,6 +10,17 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/danklinux/repo/f
 RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/avengemedia-dms.repo
 
+RUN curl -L https://copr.fedorainfracloud.org/coprs/cheverola/nerd-fonts/repo/fedora-$(rpm -E %fedora)/cheverola-nerd-fonts-fedora-$(rpm -E %fedora).repo \
+    -o /etc/yum.repos.d/cheverola-nerd-fonts.repo
+
+# ===== ADD GOOGLE CHROME REPOSITORY =====
+RUN printf '[google-chrome]\n\
+name=google-chrome\n\
+baseurl=https://dl.google.com/linux/chrome/rpm/stable/x86_64\n\
+enabled=1\n\
+gpgcheck=1\n\
+gpgkey=https://dl.google.com/linux/linux_signing_key.pub\n' > /etc/yum.repos.d/google-chrome.repo
+
 # ===== ADD SMALLSTEP REPOSITORY =====
 RUN printf '[smallstep]\n\
 name=Smallstep\n\
@@ -19,12 +30,25 @@ repo_gpgcheck=0\n\
 gpgcheck=1\n\
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
+RUN rpm-ostree override remove waybar
+
 # ===== INSTALL PACKAGES =====
 RUN rpm-ostree install \
+    google-chrome-stable \
     niri \
     quickshell-git \
     dms \
     fuzzel \
+    # --- FONTS ---
+    # 1. Nerd Fonts (Patched with icons)
+    nerd-fonts-jetbrains-mono \
+    nerd-fonts-fira-code \
+    nerd-fonts-hack \
+    nerd-fonts-symbols \
+    cascadia-code-fonts \
+    fira-code-fonts \
+    jetbrains-mono-fonts-all \
+    google-noto-emoji-fonts \
     alacritty \
     kitty \
     emacs \
