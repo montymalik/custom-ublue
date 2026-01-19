@@ -59,7 +59,7 @@ RUN rpm-ostree install \
     yazi \
     # REMOVED: eza (as requested)
     pandoc \
-    Shellcheck \
+    ShellCheck \
     && rpm-ostree cleanup -m
 
 # Batch 2: Remmina
