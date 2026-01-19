@@ -55,8 +55,12 @@ RUN rpm-ostree install \
 # ===== 3. MANUAL INSTALLS =====
 
 # Install Matugen (Binary)
-RUN curl -L https://github.com/InioX/matugen/releases/latest/download/matugen-linux-x86_64 -o /usr/bin/matugen && \
-    chmod +x /usr/bin/matugen
+RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/download/v3.1.0/matugen-3.1.0-x86_64.tar.gz && \
+    tar -xzf /tmp/matugen.tar.gz -C /tmp && \
+    # Move the binary (it extracts to the root or a subfolder, this handles both)
+    find /tmp -name matugen -type f -exec mv {} /usr/bin/matugen \; && \
+    chmod +x /usr/bin/matugen && \
+    rm -rf /tmp/matugen*
 
 # Install Nerd Fonts (Manual)
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
