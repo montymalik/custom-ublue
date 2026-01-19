@@ -25,23 +25,19 @@ repo_gpgcheck=0\n\
 gpgcheck=1\n\
 gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
 
-# ===== 2. INSTALL PACKAGES (SPLIT FOR SAFETY) =====
+# ===== 2. INSTALL PACKAGES (Ordered by Stability) =====
 
-# Batch 1: Core GUI & Tools (Standard Fedora/Chrome/Smallstep Repos)
-# We install 'unzip' here so we can use it later
+# Batch 1: Core Fedora Packages (Safe, rarely break)
 RUN rpm-ostree install \
     unzip \
-    google-chrome-stable \
     alacritty \
     kitty \
     emacs \
     freerdp \
-    step-cli \
-    step-ca \
     google-noto-emoji-fonts \
     && rpm-ostree cleanup -m
 
-# Batch 2: Remmina & Plugins
+# Batch 2: Remmina (Split to isolate deps)
 RUN rpm-ostree install \
     remmina \
     remmina-plugins-rdp \
@@ -50,8 +46,15 @@ RUN rpm-ostree install \
     remmina-plugins-secret \
     && rpm-ostree cleanup -m
 
-# Batch 3: Niri & COPR Packages
-# (Removed 'matugen' from here as it likely caused the failure)
+# Batch 3: Google Chrome (Proprietary, frequent updates)
+RUN rpm-ostree install google-chrome-stable && rpm-ostree cleanup -m
+
+# Batch 4: Smallstep CLI ONLY
+# REMOVED: step-ca (This was causing the crash)
+RUN rpm-ostree install step-cli && rpm-ostree cleanup -m
+
+# Batch 5: Niri & COPRs
+# REMOVED: matugen (Installing manually below)
 RUN rpm-ostree install \
     niri \
     quickshell-git \
@@ -61,13 +64,11 @@ RUN rpm-ostree install \
 
 # ===== 3. MANUAL INSTALLS =====
 
-# Install Matugen (Download Binary directly)
-# Matugen is not in standard repos, so we fetch the latest release.
+# Install Matugen (Binary)
 RUN curl -L https://github.com/InioX/matugen/releases/latest/download/matugen-linux-x86_64 -o /usr/bin/matugen && \
     chmod +x /usr/bin/matugen
 
-# Install Nerd Fonts (Manual Download)
-# This is the "System Image" way. Homebrew is for user-space only.
+# Install Nerd Fonts (Manual)
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
     curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
     unzip -o /tmp/JetBrainsMono.zip -d /usr/share/fonts/nerd-fonts && \
