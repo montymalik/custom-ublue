@@ -113,13 +113,11 @@ RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/
     find /tmp -name pandoc.1 -type f -exec mv {} /usr/share/man/man1/ \; && \
     rm -rf /tmp/pandoc*
 
-# Install Devbox (Manual Static Binary)
-# Required for 'ujust install-dev-tools'
-RUN curl -Lo /tmp/devbox.tar.gz https://releases.jetpack.io/devbox/v0.13.7/devbox_0.13.7_linux_amd64.tar.gz && \
-    tar -xzf /tmp/devbox.tar.gz -C /tmp && \
-    mv /tmp/devbox /usr/bin/devbox && \
-    chmod +x /usr/bin/devbox && \
-    rm -rf /tmp/devbox*
+# Install Devbox (Official Script)
+# Uses the official installer to avoid broken URLs/Versions
+RUN curl -fsSL https://get.jetpack.io/devbox | bash -s -- -f && \
+    # Move from /usr/local/bin to /usr/bin for OSTree consistency
+    mv /usr/local/bin/devbox /usr/bin/devbox
 
 # Install Nerd Fonts (Manual)
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
