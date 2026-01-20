@@ -44,6 +44,10 @@ force-update-dotfiles:
     cp -f /usr/share/custom-ublue/fuzzel/fuzzel.ini ~/.config/fuzzel/
     echo "All dotfiles reset to image defaults."
 
+setup-flathub:
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    echo "Flathub user repo configured."
+
 # Set Fish as default shell & Configure CLI Tools (Atuin/Starship)
 set-shell-fish:
     # 1. Set default shell
