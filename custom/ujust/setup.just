@@ -27,20 +27,25 @@ install-flatpaks:
     done
 
 # 3. Dotfiles Installer
+
+# 3. Dotfiles Installer (Overwrite Mode)
+# WARNING: This will reset your local configs to match the image every time.
 install-dotfiles:
-    echo "Installing dotfiles..."
+    echo "Installing dotfiles (Overwriting local changes)..."
     mkdir -p ~/.config/{niri,alacritty,kitty,starship,doom,fuzzel,fish/conf.d}
     
     # Niri
-    [ ! -f ~/.config/niri/config.kdl ] && cp /usr/share/custom-ublue/niri/config.kdl ~/.config/niri/
+    cp -f /usr/share/custom-ublue/niri/config.kdl ~/.config/niri/
     
-    # Alacritty & Kitty (Themes)
-    cp -n /usr/share/custom-ublue/alacritty/*.toml ~/.config/alacritty/
-    cp -n /usr/share/custom-ublue/kitty/*.conf ~/.config/kitty/
+    # Alacritty & Kitty
+    cp -f /usr/share/custom-ublue/alacritty/*.toml ~/.config/alacritty/
+    cp -f /usr/share/custom-ublue/kitty/*.conf ~/.config/kitty/
     
     # Starship & Fuzzel
-    cp -n /usr/share/custom-ublue/starship/starship.toml ~/.config/starship.toml
-    cp -n /usr/share/custom-ublue/fuzzel/fuzzel.ini ~/.config/fuzzel/
+    cp -f /usr/share/custom-ublue/starship/starship.toml ~/.config/starship.toml
+    cp -f /usr/share/custom-ublue/fuzzel/fuzzel.ini ~/.config/fuzzel/
+    
+    echo "Dotfiles installed."
 
 # 4. Shell Setup
 set-shell-fish:
