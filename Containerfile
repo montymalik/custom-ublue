@@ -8,7 +8,7 @@ FROM ghcr.io/ublue-os/bluefin-dx:latest
 COPY --from=docker.io/koalaman/shellcheck-alpine:stable /bin/shellcheck /usr/bin/shellcheck
 
 # Pandoc (Document Converter)
-COPY --from=docker.io/pandoc/core:latest /usr/bin/pandoc /usr/bin/pandoc
+COPY --from=docker.io/pandoc/minimal:latest /usr/bin/pandoc /usr/bin/pandoc
 
 # Matugen (Material You Generator)
 # (Matugen doesn't have an official "bin" image yet, so we keep the curl method for now,
