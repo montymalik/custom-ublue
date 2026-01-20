@@ -47,10 +47,15 @@ install-dotfiles:
     
     echo "Dotfiles installed."
 
-# 4. Shell Setup
+# 4. Shell Setup (Fixed: Adds Homebrew to Path)
 set-shell-fish:
     sudo usermod -s /usr/bin/fish $USER
     mkdir -p ~/.config/fish/conf.d
+    
+    # 1. Initialize Homebrew (Must run first!)
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' > ~/.config/fish/conf.d/00-brew.fish
+    
+    # 2. Enable Tools
     echo 'atuin init fish | source' > ~/.config/fish/conf.d/atuin.fish
     echo 'starship init fish | source' > ~/.config/fish/conf.d/starship.fish
 
