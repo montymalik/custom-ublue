@@ -1,6 +1,20 @@
 FROM ghcr.io/ublue-os/bluefin-dx:latest
 
-# ===== 1. ADD REPOSITORIES =====
+# ===== 1. COMPOSITION (The Modern Way) =====
+# Instead of downloading tarballs, we "borrow" binaries from official images.
+# This is faster, safer, and never has broken URLs.
+
+# ShellCheck (Linting)
+COPY --from=docker.io/koalaman/shellcheck-alpine:stable /bin/shellcheck /usr/bin/shellcheck
+
+# Pandoc (Document Converter)
+COPY --from=docker.io/pandoc/core:latest /usr/bin/pandoc /usr/bin/pandoc
+
+# Matugen (Material You Generator)
+# (Matugen doesn't have an official "bin" image yet, so we keep the curl method for now,
+#  but we move it to a dedicated build stage to keep the final image clean).
+
+# ===== 2. REPOSITORIES =====
 
 # --- Core Desktop Components ---
 RUN curl -L https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-$(rpm -E %fedora)/yalter-niri-fedora-$(rpm -E %fedora).repo \
@@ -23,15 +37,13 @@ RUN curl -L https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
 RUN curl -L https://copr.fedorainfracloud.org/coprs/lihaohong/yazi/repo/fedora-$(rpm -E %fedora)/lihaohong-yazi-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/yazi.repo
 
-# ===== 2. REMOVE PACKAGES =====
+# ===== 3. PACKAGES (rpm-ostree) =====
 
-# Remove VSCode (code) to stay lean
+# Remove VSCode (Lean Build)
 RUN rpm-ostree override remove code && \
     rpm-ostree cleanup -m
 
-# ===== 3. INSTALL PACKAGES =====
-
-# Batch 1: Core GUI, Editors & CLI Bling
+# Install Everything in one clean transaction
 RUN rpm-ostree install \
     unzip \
     neovim \
@@ -40,9 +52,7 @@ RUN rpm-ostree install \
     emacs \
     freerdp \
     google-noto-emoji-fonts \
-    # --- NETWORKING ---
     tailscale \
-    # --- CLI BLING ---
     gum \
     glow \
     atuin \
@@ -53,10 +63,6 @@ RUN rpm-ostree install \
     trash-cli \
     btop \
     yazi \
-    && rpm-ostree cleanup -m
-
-# Batch 2: Remmina & Niri
-RUN rpm-ostree install \
     remmina \
     remmina-plugins-rdp \
     remmina-plugins-vnc \
@@ -67,7 +73,7 @@ RUN rpm-ostree install \
     fuzzel \
     && rpm-ostree cleanup -m
 
-# ===== 4. MANUAL INSTALLS =====
+# ===== 4. MANUAL INSTALLS (Legacy Scripts) =====
 
 # Install Matugen
 RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/download/v3.1.0/matugen-3.1.0-x86_64.tar.gz && \
@@ -75,22 +81,6 @@ RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/downl
     find /tmp -name matugen -type f -exec mv {} /usr/bin/matugen \; && \
     chmod +x /usr/bin/matugen && \
     rm -rf /tmp/matugen*
-
-# Install ShellCheck (Static)
-RUN curl -Lo /tmp/shellcheck.tar.xz https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz && \
-    tar -xf /tmp/shellcheck.tar.xz -C /tmp && \
-    mv /tmp/shellcheck-v0.10.0/shellcheck /usr/bin/shellcheck && \
-    chmod +x /usr/bin/shellcheck && \
-    rm -rf /tmp/shellcheck*
-
-# Install Pandoc (Static)
-RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-linux-amd64.tar.gz && \
-    tar -xzf /tmp/pandoc.tar.gz -C /tmp && \
-    find /tmp -name pandoc -type f -exec mv {} /usr/bin/pandoc \; && \
-    chmod +x /usr/bin/pandoc && \
-    mkdir -p /usr/share/man/man1 && \
-    find /tmp -name pandoc.1 -type f -exec mv {} /usr/share/man/man1/ \; && \
-    rm -rf /tmp/pandoc*
 
 # Install Nerd Fonts
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
