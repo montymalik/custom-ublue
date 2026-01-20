@@ -18,7 +18,7 @@ COPY scripts /usr/share/custom-ublue/scripts
 RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 
 # Copy your custom Just commands to the system location
-COPY custom/ujust /usr/share/ublue-os/just/60-custom.just
+COPY custom/ujust/setup.just /usr/share/ublue-os/just/60-custom.just
 
 # 4. COPY BREW & FLATPAK LISTS
 # Bluefin knows to look in /usr/share/ublue-os/ for these
