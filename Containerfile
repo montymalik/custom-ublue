@@ -113,11 +113,9 @@ RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/
     find /tmp -name pandoc.1 -type f -exec mv {} /usr/share/man/man1/ \; && \
     rm -rf /tmp/pandoc*
 
-# Install Devbox (Official Script)
-# Uses the official installer to avoid broken URLs/Versions
-RUN curl -fsSL https://get.jetpack.io/devbox | bash -s -- -f && \
-    # Move from /usr/local/bin to /usr/bin for OSTree consistency
-    mv /usr/local/bin/devbox /usr/bin/devbox
+# Install Devbox (The Easy Way)
+# Copies the binary directly from the official image. Always latest.
+COPY --from=docker.io/jetpackio/devbox:latest /usr/local/bin/devbox /usr/bin/devbox
 
 # Install Nerd Fonts (Manual)
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
