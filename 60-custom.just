@@ -48,33 +48,38 @@ force-update-dotfiles:
 set-shell-fish:
     # 1. Set default shell
     sudo usermod -s /usr/bin/fish $USER
-    
+
     # 2. Ensure config dir exists
     mkdir -p ~/.config/fish/conf.d
 
     # 3. Enable Atuin (Shell History)
     echo 'atuin init fish | source' > ~/.config/fish/conf.d/atuin.fish
-    
+
     # 4. Enable Starship (Prompt)
     echo 'starship init fish | source' > ~/.config/fish/conf.d/starship.fish
-    
+
     echo "Fish configured with Atuin and Starship."
 
-# Install Dev Tools via Devbox
-install-dev-tools:
-    devbox global add go nodejs rustup
-    echo "Dev tools installed. Run 'devbox global shell' to use them."
+# --- APPLICATIONS & TOOLS ---
 
-# Install Google Chrome (Flatpak - Recommended)
+# Install Google Chrome (Flatpak)
 install-chrome:
     flatpak install flathub com.google.Chrome -y
     echo "Chrome installed!"
 
-# Install Google Chrome (Layered RPM - Alternative)
-install-chrome-rpm:
-    sudo dnf config-manager --set-enabled google-chrome
-    sudo rpm-ostree install google-chrome-stable
-    echo "Chrome layered. Please reboot."
+# Install Podman Desktop (Flatpak)
+# The official GUI for managing containers on Bluefin
+install-podman-desktop:
+    flatpak install flathub io.podman_desktop.PodmanDesktop -y
+    echo "Podman Desktop installed!"
+
+# Install DevContainers CLI (Homebrew)
+# Allows using devcontainers in Neovim/Terminal without VSCode
+install-devcontainer-cli:
+    brew install devcontainer
+    echo "DevContainer CLI installed!"
+
+# --- EDITORS ---
 
 # Install Doom Emacs (Uses bash to avoid read-only errors)
 install-doom:
@@ -93,6 +98,8 @@ install-lazyvim:
 # Install both editors
 install-editors: install-doom install-lazyvim
 
+# --- SETUP ALL ---
+
 # Setup everything (The "One Command" Setup)
-setup-all: install-dotfiles set-shell-fish install-editors install-chrome
+setup-all: install-dotfiles set-shell-fish install-editors install-chrome install-podman-desktop install-devcontainer-cli
     echo "All configurations installed! Please restart your session."
