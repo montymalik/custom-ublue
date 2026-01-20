@@ -16,30 +16,21 @@ RUN curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-
 RUN curl -L https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/lazygit.repo
 
-# NEW: Tailscale Official Repo (Stable)
+# --- Tailscale & Yazi ---
 RUN curl -L https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
     -o /etc/yum.repos.d/tailscale.repo
 
-# NEW: Yazi Repo (Unofficial COPR)
 RUN curl -L https://copr.fedorainfracloud.org/coprs/lihaohong/yazi/repo/fedora-$(rpm -E %fedora)/lihaohong-yazi-fedora-$(rpm -E %fedora).repo \
     -o /etc/yum.repos.d/yazi.repo
 
-RUN printf '[charm]\n\
-name=Charm\n\
-baseurl=https://repo.charm.sh/yum/\n\
-enabled=1\n\
-gpgcheck=1\n\
-gpgkey=https://repo.charm.sh/yum/gpg.key\n' > /etc/yum.repos.d/charm.repo
+# ===== 2. REMOVE PACKAGES =====
 
-RUN printf '[smallstep]\n\
-name=Smallstep\n\
-baseurl=https://packages.smallstep.com/stable/fedora/\n\
-enabled=1\n\
-repo_gpgcheck=0\n\
-gpgcheck=1\n\
-gpgkey=https://packages.smallstep.com/keys/smallstep-0x889B19391F774443.gpg\n' > /etc/yum.repos.d/smallstep.repo
+# Remove VSCode (code) because you use Neovim/Emacs
+# This saves space and removes the "bluefin-dx" default IDE
+RUN rpm-ostree override remove code && \
+    rpm-ostree cleanup -m
 
-# ===== 2. INSTALL PACKAGES =====
+# ===== 3. INSTALL PACKAGES =====
 
 # Batch 1: Core GUI, Editors & CLI Bling
 RUN rpm-ostree install \
@@ -50,7 +41,7 @@ RUN rpm-ostree install \
     emacs \
     freerdp \
     google-noto-emoji-fonts \
-    # --- NETWORKING (New) ---
+    # --- NETWORKING ---
     tailscale \
     # --- CLI BLING ---
     gum \
@@ -65,71 +56,58 @@ RUN rpm-ostree install \
     yazi \
     && rpm-ostree cleanup -m
 
-# Batch 2: Remmina
+# Batch 2: Remmina & Niri
 RUN rpm-ostree install \
     remmina \
     remmina-plugins-rdp \
     remmina-plugins-vnc \
-    remmina-plugins-exec \
     remmina-plugins-secret \
-    && rpm-ostree cleanup -m
-
-# Batch 3: Smallstep CLI
-RUN rpm-ostree install step-cli && rpm-ostree cleanup -m
-
-# Batch 4: Niri & COPRs
-RUN rpm-ostree install \
     niri \
     quickshell-git \
     dms \
     fuzzel \
     && rpm-ostree cleanup -m
 
-# ===== 3. MANUAL INSTALLS =====
+# ===== 4. MANUAL INSTALLS =====
 
-# Install Matugen (Manual Archive)
+# Install DevContainers CLI (Standalone)
+# Allows using devcontainers with Neovim/Terminal without VSCode
+RUN npm install -g @devcontainers/cli
+
+# Install Matugen
 RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/download/v3.1.0/matugen-3.1.0-x86_64.tar.gz && \
     tar -xzf /tmp/matugen.tar.gz -C /tmp && \
     find /tmp -name matugen -type f -exec mv {} /usr/bin/matugen \; && \
     chmod +x /usr/bin/matugen && \
     rm -rf /tmp/matugen*
 
-# Install ShellCheck (Static Binary)
+# Install ShellCheck (Static)
 RUN curl -Lo /tmp/shellcheck.tar.xz https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz && \
     tar -xf /tmp/shellcheck.tar.xz -C /tmp && \
     mv /tmp/shellcheck-v0.10.0/shellcheck /usr/bin/shellcheck && \
     chmod +x /usr/bin/shellcheck && \
     rm -rf /tmp/shellcheck*
 
-# Install Pandoc (Static Binary)
-# Uses 'find' to locate files regardless of the internal folder name
+# Install Pandoc (Static)
 RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-linux-amd64.tar.gz && \
     tar -xzf /tmp/pandoc.tar.gz -C /tmp && \
-    # Find binary and move it
     find /tmp -name pandoc -type f -exec mv {} /usr/bin/pandoc \; && \
     chmod +x /usr/bin/pandoc && \
-    # Find man page and move it
     mkdir -p /usr/share/man/man1 && \
     find /tmp -name pandoc.1 -type f -exec mv {} /usr/share/man/man1/ \; && \
     rm -rf /tmp/pandoc*
 
-# Install Devbox (The Easy Way)
-# Copies the binary directly from the official image. Always latest.
-COPY --from=docker.io/jetpackio/devbox:latest /usr/local/bin/devbox /usr/bin/devbox
-
-# Install Nerd Fonts (Manual)
+# Install Nerd Fonts
 RUN mkdir -p /usr/share/fonts/nerd-fonts && \
     curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
     unzip -o /tmp/JetBrainsMono.zip -d /usr/share/fonts/nerd-fonts && \
     rm /tmp/JetBrainsMono.zip && \
     fc-cache -fv
 
-# ===== 4. CONFIGURATION =====
+# ===== 5. CONFIGURATION =====
 COPY config /usr/share/custom-ublue
 COPY scripts /usr/share/custom-ublue/scripts
 RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 COPY 60-custom.just /usr/share/ublue-os/just/60-custom.just
 
-# ===== METADATA =====
 LABEL org.opencontainers.image.title="Custom Bluefin DX - Niri Edition"
-LABEL org.opencontainers.image.version="1.0"
