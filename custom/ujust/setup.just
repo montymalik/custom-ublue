@@ -12,19 +12,16 @@ setup-all:
 
 # --- WORKER COMMANDS ---
 
-# 1. Homebrew Installer
-# Reads the Brewfile we copied to the system location
+# 1. Homebrew Installer (FIXED: Removed invalid --no-lock flag)
 install-brew-packages:
     echo "Installing Brew packages..."
-    brew bundle --file /usr/share/ublue-os/brew/Brewfile --no-lock
+    brew bundle --file /usr/share/ublue-os/brew/Brewfile
 
 # 2. Flatpak Installer
-# Reads the flatpak list and installs them one by one
 install-flatpaks:
     echo "Configuring Flathub..."
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     echo "Installing Flatpaks from list..."
-    # Loop through the list and install each app
     for pkg in $(cat /usr/share/ublue-os/flatpak/overrides/user-flatpaks.txt); do \
         flatpak install --user -y flathub $pkg; \
     done
