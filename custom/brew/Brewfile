@@ -1,0 +1,19 @@
+# Taps
+tap "smallstep/step"
+
+# Binaries (Moved from RPM/Containerfile)
+brew "pandoc"
+brew "shellcheck"
+brew "step"
+brew "devcontainer"
+
+# CLI Bling
+brew "gum"
+brew "glow"
+brew "atuin"
+brew "lazygit"
+brew "bat"
+brew "zoxide"
+brew "tealdeer"
+brew "trash-cli"
+brew "btop"
