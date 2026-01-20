@@ -102,13 +102,15 @@ RUN curl -Lo /tmp/shellcheck.tar.xz https://github.com/koalaman/shellcheck/relea
     rm -rf /tmp/shellcheck*
 
 # Install Pandoc (Static Binary)
+# Uses 'find' to locate files regardless of the internal folder name
 RUN curl -Lo /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-linux-amd64.tar.gz && \
     tar -xzf /tmp/pandoc.tar.gz -C /tmp && \
-    mv /tmp/pandoc-3.1.11.1/bin/pandoc /usr/bin/pandoc && \
+    # Find binary and move it
+    find /tmp -name pandoc -type f -exec mv {} /usr/bin/pandoc \; && \
     chmod +x /usr/bin/pandoc && \
-    # Install manpages
+    # Find man page and move it
     mkdir -p /usr/share/man/man1 && \
-    mv /tmp/pandoc-3.1.11.1/share/man/man1/pandoc.1 /usr/share/man/man1/ && \
+    find /tmp -name pandoc.1 -type f -exec mv {} /usr/share/man/man1/ \; && \
     rm -rf /tmp/pandoc*
 
 # Install Nerd Fonts (Manual)
