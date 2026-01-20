@@ -70,7 +70,7 @@ install-chrome:
 # Install Podman Desktop (Flatpak)
 # The official GUI for managing containers on Bluefin
 install-podman-desktop:
-    flatpak install flathub io.podman_desktop.PodmanDesktop -y
+    flatpak install --user flathub io.podman_desktop.PodmanDesktop -y
     echo "Podman Desktop installed!"
 
 # Install DevContainers CLI (Homebrew)
