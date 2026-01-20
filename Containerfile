@@ -72,7 +72,7 @@ RUN rpm-ostree install \
 
 # Install DevContainers CLI (Standalone)
 # Allows using devcontainers with Neovim/Terminal without VSCode
-RUN npm install -g @devcontainers/cli
+RUN npm install -g --prefix /usr @devcontainers/cli
 
 # Install Matugen
 RUN curl -Lo /tmp/matugen.tar.gz https://github.com/InioX/matugen/releases/download/v3.1.0/matugen-3.1.0-x86_64.tar.gz && \
