@@ -69,6 +69,9 @@ set-shell-fish:
     echo 'atuin init fish | source' > ~/.config/fish/conf.d/atuin.fish
     echo 'starship init fish | source' > ~/.config/fish/conf.d/starship.fish
 
+    # Activate Mise
+    echo 'mise activate fish | source' > ~/.config/fish/conf.d/mise.fish
+
 # 5. Editors
 install-editors:
     bash /usr/share/custom-ublue/scripts/install-doom.sh
