@@ -24,10 +24,20 @@ brew "tealdeer"
 brew "trash-cli"
 brew "btop"
 brew "fastfetch"
+brew "mise""
 
 # --- Fonts ---
 # Note: On Linux, these install to the brew prefix. 
 # We need the ujust script below to link them to your system.
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
-brew "fonts"  # The custom package you requested
+cask "font-caskaydia-cove-nerd-font"       # CaskaydiaMono
+cask "font-comic-shanns-mono-nerd-font"    # Comic Shanns
+cask "font-droid-sans-mono-nerd-font"      # Droid Sans
+cask "font-go-mono-nerd-font"              # Go Mono
+cask "font-blex-mono-nerd-font"            # Blex Mono
+cask "font-sauce-code-pro-nerd-font"       # Sauce Code Pro
+cask "font-source-code-pro"                # Source Code Pro (Standard)
+cask "font-ubuntu-nerd-font"               # Ubuntu
+cask "font-fira-code-nerd-font"            # FiraCode
+cask "font-0xproto-nerd-font"              # 0xProto
