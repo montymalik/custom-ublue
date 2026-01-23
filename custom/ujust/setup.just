@@ -12,10 +12,19 @@ setup-all:
 
 # --- WORKER COMMANDS ---
 
-# 1. Homebrew Installer (FIXED: Removed invalid --no-lock flag)
+# 1. Homebrew Installer (Updated for Conflict Resolution)
 install-brew-packages:
     echo "Installing Brew packages..."
+    # Force-unlink ugrep if it exists to prevent the glib conflict
+    brew unlink ugrep || true
+    
+    # Run the bundle
     brew bundle --file /usr/share/ublue-os/brew/Brewfile
+    
+    # Force-link everything at the end to clean up any messes
+    echo "Resolving link conflicts..."
+    brew link --overwrite ugrep || true
+    brew link --overwrite glib || true
 
 # NEW: Links Homebrew fonts so Linux can see them
 link-brew-fonts:
