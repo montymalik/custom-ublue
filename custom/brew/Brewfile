@@ -4,10 +4,19 @@ brew "shellcheck"
 brew "step"
 brew "devcontainer"
 
+brew "emacs"
+brew "neovim"
+
 # CLI Bling
 brew "gum"
 brew "glow"
 brew "atuin"
+brew "yazi"
+brew "fd"
+brew "jq"
+brew "ripgrep"
+brew "poppler"
+brew "fzf"
 brew "lazygit"
 brew "bat"
 brew "zoxide"
@@ -15,3 +24,10 @@ brew "tealdeer"
 brew "trash-cli"
 brew "btop"
 brew "fastfetch"
+
+# --- Fonts ---
+# Note: On Linux, these install to the brew prefix. 
+# We need the ujust script below to link them to your system.
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
+brew "fonts"  # The custom package you requested

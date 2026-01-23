@@ -17,6 +17,16 @@ install-brew-packages:
     echo "Installing Brew packages..."
     brew bundle --file /usr/share/ublue-os/brew/Brewfile
 
+# NEW: Links Homebrew fonts so Linux can see them
+link-brew-fonts:
+    echo "Linking Homebrew fonts to system..."
+    mkdir -p ~/.local/share/fonts
+    # Find all fonts in Homebrew Caskroom and link them to user fonts
+    find /home/linuxbrew/.linuxbrew/Caskroom -name "*.ttf" -o -name "*.otf" | xargs -I{} ln -sf {} ~/.local/share/fonts/
+    # Refresh font cache
+    fc-cache -fv
+    echo "Fonts linked successfully!"
+
 # 2. Flatpak Installer
 install-flatpaks:
     echo "Configuring Flathub..."
