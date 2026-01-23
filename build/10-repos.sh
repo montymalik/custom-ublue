@@ -17,9 +17,6 @@ curl -L https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rp
 curl -L https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo \
   -o /etc/yum.repos.d/lazygit.repo
 
-curl -L https://copr.fedorainfracloud.org/coprs/lihaohong/yazi/repo/fedora-$(rpm -E %fedora)/lihaohong-yazi-fedora-$(rpm -E %fedora).repo \
-  -o /etc/yum.repos.d/yazi.repo
-
 # Tailscale (Stable)
 curl -L https://pkgs.tailscale.com/stable/fedora/tailscale.repo \
   -o /etc/yum.repos.d/tailscale.repo

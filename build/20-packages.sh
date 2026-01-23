@@ -9,14 +9,11 @@ rpm-ostree override remove code
 # Install Core System Components
 rpm-ostree install \
   unzip \
-  neovim \
   alacritty \
   kitty \
-  emacs \
   freerdp \
   google-noto-emoji-fonts \
   tailscale \
-  yazi \
   remmina \
   remmina-plugins-rdp \
   remmina-plugins-vnc \
