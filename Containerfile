@@ -1,3 +1,18 @@
+# --- SYSTEM MAINTENANCE ---
+
+# Overrides the default Bluefin update command
+# Updates CLI tools, Apps, and the System Image in one go.
+update:
+    echo "=== 🍺 Updating Homebrew ==="
+    brew upgrade
+    
+    echo "=== 📦 Updating Flatpaks ==="
+    flatpak update -y
+    
+    echo "=== 💿 Updating System Image ==="
+    # Checks for image updates (rpm-ostree) and firmware updates (fwupd)
+    rpm-ostree upgrade
+
 # Name: bluefin-dx-niri-custom
 FROM ghcr.io/ublue-os/bluefin-dx:latest
 
