@@ -367,7 +367,7 @@ binds {
     Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "dms" "ipc" "call" "lock" "lock"; }
 
-    Super+C hotkey-overlay-title="Open Calendar" { spawn-sh "alacritty -e /home/monty/projects/go-calendar/cal"; }
+    Super+C hotkey-overlay-title="Open Calendar" { spawn-sh "kitty -e /home/monty/projects/go-calendar/cal"; }
     Super+E hotkey-overlay-title="Open Emacs" { spawn "emacsclient" "-c" "-a" ""; }
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note:
