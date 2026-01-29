@@ -9,6 +9,8 @@ rpm-ostree override remove code
 # Install Core System Components
 rpm-ostree install \
   unzip \
+  ncurses-term \
+  kitty-terminfo \
   alacritty \
   kitty \
   freerdp \
