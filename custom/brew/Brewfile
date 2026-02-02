@@ -3,6 +3,7 @@ brew "pandoc"
 brew "shellcheck"
 brew "step"
 brew "devcontainer"
+brew "chafa"
 
 brew "emacs"
 brew "neovim"
