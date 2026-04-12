@@ -317,3 +317,14 @@ format:
     fi
     # Run shfmt on all Bash scripts
     /usr/bin/find . -iname "*.sh" -type f -exec shfmt --write "{}" ';'
+
+
+# Update system and cleanup EOL Flatpak runtimes
+[group('Utility')]
+update:
+    #!/usr/bin/bash
+    echo "Starting System Update..."
+    ujust update
+    echo "Cleaning up unused/EOL Flatpak runtimes..."
+    just sudoif flatpak uninstall --unused -y
+    echo "Update and Cleanup Complete."
