@@ -1,4 +1,4 @@
-#!/bin/bash
+stalwart pangolin#!/bin/bash
 set -ouex pipefail
 
 echo "Installing System Packages..."
@@ -29,4 +29,6 @@ rpm-ostree install \
   niri \
   quickshell-git \
   dms \
+  nfs-utils \
+  autofs \
   fuzzel
