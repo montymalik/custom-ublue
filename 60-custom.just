@@ -107,3 +107,14 @@ install-editors: install-doom install-lazyvim
 # Setup everything (The "One Command" Setup)
 setup-all: install-dotfiles set-shell-fish install-editors install-chrome install-podman-desktop install-devcontainer-cli
     echo "All configurations installed! Please restart your session."
+
+# --- UPDATES & MAINTENANCE ---
+
+# Sync Homebrew packages with the image's Brewfile
+# Run this after pulling a new image with Homebrew additions
+sync-homebrew:
+    #!/usr/bin/bash
+    echo "Syncing Homebrew packages..."
+    # Note: Adjust this path if your build copies the Brewfile to /usr/share/custom-ublue/ instead
+    brew bundle --file=/var/home/monty/custom-ublue/custom/brew/Brewfile
+    echo "Homebrew sync complete!"
