@@ -4,7 +4,7 @@ set -ouex pipefail
 echo "Installing System Packages..."
 
 # Remove VSCode
-rpm-ostree override remove code
+dnf5 -y remove code
 
 # Keep the Qt 6 stack in sync with Fedora updates.
 # quickshell-git from the avengemedia COPR is built against the current
@@ -13,22 +13,19 @@ rpm-ostree override remove code
 # error (undefined symbol ... version Qt_6). Upgrading Qt first avoids it.
 dnf5 -y upgrade 'qt6-qt*'
 
-# Install Core System Components
-rpm-ostree install \
+# Install Core System Components.
+# Already provided by the Bluefin DX base and therefore not listed here:
+# tailscale, nfs-utils, autofs, ncurses-term, google-noto-emoji-fonts,
+# jetbrains-mono-fonts, adobe-source-code-pro-fonts, cascadia-code-fonts.
+dnf5 -y install \
   unzip \
-  ncurses-term \
   kitty-terminfo \
   alacritty \
   kitty \
   freerdp \
-  google-noto-emoji-fonts \
-  jetbrains-mono-fonts \
   fira-code-fonts \
-  adobe-source-code-pro-fonts \
-  cascadia-code-fonts \
   google-noto-sans-mono-fonts \
   google-droid-sans-mono-fonts \
-  tailscale \
   remmina \
   remmina-plugins-rdp \
   remmina-plugins-vnc \
@@ -36,6 +33,4 @@ rpm-ostree install \
   niri \
   quickshell-git \
   dms \
-  nfs-utils \
-  autofs \
   fuzzel

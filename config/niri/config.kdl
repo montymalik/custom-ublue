@@ -269,8 +269,8 @@ layout {
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
 // spawn-at-startup "waybar"
+// DMS provides the bar, launcher, lock screen, notifications and polkit agent.
 spawn-at-startup "dms" "run"
-spawn-at-startup  "/usr/lib/polkit-kde-authentication-agent-1"
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -619,6 +619,15 @@ binds {
 }
 
 
-include "dms/outputs.kdl"
-
+// Files managed by DMS (dms setup / the DMS settings UI). Keep every one of
+// these included so changes made in DMS take effect; ujust install-dotfiles
+// creates them empty if DMS has not written them yet.
+include "dms/alttab.kdl"
+include "dms/binds.kdl"
+include "dms/colors.kdl"
 include "dms/cursor.kdl"
+include "dms/input.kdl"
+include "dms/layout.kdl"
+include "dms/outputs.kdl"
+include "dms/windowrules.kdl"
+include "dms/wpblur.kdl"

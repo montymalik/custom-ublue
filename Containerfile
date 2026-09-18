@@ -1,18 +1,3 @@
-# --- SYSTEM MAINTENANCE ---
-
-# Overrides the default Bluefin update command
-# Updates CLI tools, Apps, and the System Image in one go.
-update:
-    echo "=== 🍺 Updating Homebrew ==="
-    brew upgrade
-    
-    echo "=== 📦 Updating Flatpaks ==="
-    flatpak update -y
-    
-    echo "=== 💿 Updating System Image ==="
-    # Checks for image updates (rpm-ostree) and firmware updates (fwupd)
-    rpm-ostree upgrade
-
 # Name: bluefin-dx-niri-custom
 FROM ghcr.io/ublue-os/bluefin-dx:latest
 
@@ -36,8 +21,10 @@ RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 COPY custom/ujust/setup.just /usr/share/ublue-os/just/60-custom.just
 
 # 4. COPY BREW & FLATPAK LISTS
-# Bluefin knows to look in /usr/share/ublue-os/ for these
-COPY custom/brew/Brewfile /usr/share/ublue-os/brew/Brewfile
+# Bluefin's own Brewfiles live in /usr/share/ublue-os/homebrew/, so placing ours
+# there makes it show up in Bluefin's Brewfile picker. The flatpak list is only
+# read by our own ujust recipes (see custom/ujust/setup.just).
+COPY custom/brew/Brewfile /usr/share/ublue-os/homebrew/custom.Brewfile
 COPY custom/flatpaks/flatpaks /usr/share/ublue-os/flatpak/overrides/user-flatpaks.txt
 
 LABEL org.opencontainers.image.title="Custom Bluefin DX - Niri Edition"

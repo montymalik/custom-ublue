@@ -48,6 +48,7 @@ fi
 
 # 6. Configure Path for Bash (Fallback)
 if ! grep -q ".config/emacs/bin" ~/.bashrc; then
+  # shellcheck disable=SC2016 # expansion is intended to happen when .bashrc is sourced
   echo 'export PATH="$HOME/.config/emacs/bin:$PATH"' >>~/.bashrc
 fi
 
