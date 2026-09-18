@@ -28,3 +28,7 @@ COPY custom/brew/Brewfile /usr/share/ublue-os/homebrew/custom.Brewfile
 COPY custom/flatpaks/flatpaks /usr/share/ublue-os/flatpak/overrides/user-flatpaks.txt
 
 LABEL org.opencontainers.image.title="Custom Bluefin DX - Niri Edition"
+
+# 5. LINT
+# Verify the final image is a valid bootc container (Bluefin does the same).
+RUN bootc container lint
