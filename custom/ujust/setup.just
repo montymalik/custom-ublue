@@ -12,29 +12,10 @@ setup-all:
 
 # --- WORKER COMMANDS ---
 
-# 1. Homebrew Installer (Updated for Conflict Resolution)
+# 1. Homebrew Installer
 install-brew-packages:
     echo "Installing Brew packages..."
-    # Force-unlink ugrep if it exists to prevent the glib conflict
-    brew unlink ugrep || true
-    
-    # Run the bundle
-    brew bundle --file /usr/share/ublue-os/brew/Brewfile
-    
-    # Force-link everything at the end to clean up any messes
-    echo "Resolving link conflicts..."
-    brew link --overwrite ugrep || true
-    brew link --overwrite glib || true
-
-# NEW: Links Homebrew fonts so Linux can see them
-link-brew-fonts:
-    echo "Linking Homebrew fonts to system..."
-    mkdir -p ~/.local/share/fonts
-    # Find all fonts in Homebrew Caskroom and link them to user fonts
-    find /home/linuxbrew/.linuxbrew/Caskroom -name "*.ttf" -o -name "*.otf" | xargs -I{} ln -sf {} ~/.local/share/fonts/
-    # Refresh font cache
-    fc-cache -fv
-    echo "Fonts linked successfully!"
+    brew bundle --file /usr/share/ublue-os/homebrew/custom.Brewfile
 
 # 2. Flatpak Installer
 install-flatpaks:
@@ -45,35 +26,39 @@ install-flatpaks:
         flatpak install --user -y flathub $pkg; \
     done
 
-# 3. Dotfiles Installer
-
 # 3. Dotfiles Installer (Overwrite Mode)
 # WARNING: This will reset your local configs to match the image every time.
 install-dotfiles:
     echo "Installing dotfiles (Overwriting local changes)..."
-    mkdir -p ~/.config/{niri,alacritty,kitty,starship,doom,fuzzel,fish/conf.d}
-    
-    # Niri
+    mkdir -p ~/.config/{niri/dms,alacritty,kitty,starship,doom,fuzzel,fastfetch,fish/conf.d}
+
+    # Niri. The config includes the DMS-managed files under niri/dms/; make sure
+    # they exist (empty is fine) so niri loads on a fresh install before DMS has
+    # written them.
     cp -f /usr/share/custom-ublue/niri/config.kdl ~/.config/niri/
-    
+    for f in alttab binds colors cursor input layout outputs windowrules wpblur; do \
+        touch ~/.config/niri/dms/$f.kdl; \
+    done
+
     # Alacritty & Kitty
     cp -f /usr/share/custom-ublue/alacritty/*.toml ~/.config/alacritty/
     cp -f /usr/share/custom-ublue/kitty/*.conf ~/.config/kitty/
-    
-    # Starship & Fuzzel
+
+    # Starship, Fuzzel & Fastfetch
     cp -f /usr/share/custom-ublue/starship/starship.toml ~/.config/starship.toml
     cp -f /usr/share/custom-ublue/fuzzel/fuzzel.ini ~/.config/fuzzel/
-    
+    cp -f /usr/share/custom-ublue/fastfetch/* ~/.config/fastfetch/
+
     echo "Dotfiles installed."
 
 # 4. Shell Setup (Fixed: Adds Homebrew to Path)
 set-shell-fish:
     sudo usermod -s /usr/bin/fish $USER
     mkdir -p ~/.config/fish/conf.d
-    
+
     # 1. Initialize Homebrew (Must run first!)
     echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' > ~/.config/fish/conf.d/00-brew.fish
-    
+
     # 2. Enable Tools
     echo 'atuin init fish | source' > ~/.config/fish/conf.d/atuin.fish
     echo 'starship init fish | source' > ~/.config/fish/conf.d/starship.fish

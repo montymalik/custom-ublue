@@ -6,6 +6,8 @@ echo "Installing Manual Binaries & Fonts..."
 # --- NERD FONTS ---
 # We download these manually because Fedora doesn't package patched fonts.
 
+NERD_FONTS_VERSION="v3.5.1"
+
 mkdir -p /usr/share/fonts/nerd-fonts
 
 # 1. Map Bluefin names to Nerd Font Zip names
@@ -25,7 +27,7 @@ FONTS=(
 # 2. Download and Unzip
 for font in "${FONTS[@]}"; do
   echo "Downloading $font..."
-  curl -fLo "/tmp/${font}.zip" "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font}.zip"
+  curl -fLo "/tmp/${font}.zip" "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONTS_VERSION}/${font}.zip"
   unzip -o "/tmp/${font}.zip" -d /usr/share/fonts/nerd-fonts
   rm "/tmp/${font}.zip"
 done

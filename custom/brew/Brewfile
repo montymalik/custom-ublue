@@ -8,23 +8,19 @@ brew "chafa"
 brew "emacs"
 brew "neovim"
 
-# CLI Bling
+# CLI Bling (jq, ripgrep, fzf and fastfetch are RPMs in the Bluefin base)
 brew "gum"
 brew "glow"
 brew "atuin"
 brew "yazi"
 brew "fd"
-brew "jq"
-brew "ripgrep"
 brew "poppler"
-brew "fzf"
 brew "lazygit"
 brew "bat"
 brew "zoxide"
 brew "tealdeer"
 brew "trash-cli"
 brew "btop"
-brew "fastfetch"
 brew "mise"
 
 # Talo/K3s
