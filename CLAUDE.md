@@ -9,8 +9,11 @@ A custom [bootc](https://github.com/bootc-dev/bootc) OCI container image derived
 ## Common Commands
 
 ```bash
-# Build the container image locally
+# Build the container image locally (name/labels come from custom-ublue.env)
 just build
+
+# Split the built image into layers the way CI does (optional locally)
+just ostree-rechunk
 
 # Lint all shell scripts (requires shellcheck)
 just lint
@@ -52,7 +55,7 @@ The build is a standard OCI/Containerfile build orchestrated by `just` locally a
 - `ujust setup-all` — orchestrates: brew bundle, flatpak install, dotfile copy, fish shell setup, editor installs (Doom Emacs + LazyVim)
 - `ujust install-dotfiles` — **overwrites** `~/.config/{niri,alacritty,kitty,starship,fuzzel,fastfetch}` from `/usr/share/custom-ublue/`
 
-**CI/CD** (`build.yml`): triggers on push to `main`, weekly cron (Sundays 10:05 UTC), and PRs. Builds with `buildah`, pushes to GHCR, signs with Cosign (`SIGNING_SECRET`). Images are tagged `latest`, `latest.YYYYMMDD`, and `YYYYMMDD`.
+**CI/CD** (`build.yml`): triggers on push to `main`, weekly cron (Sundays 10:05 UTC), and PRs. Every step shells out to the Justfile (`just build`, `just ostree-rechunk`, `just generate-build-tags`, `just tag-images`) so CI and local builds are identical; image name, description and labels live in `custom-ublue.env`. Pushes to GHCR with `podman push`, then signs the manifest digest with Cosign 3 using `--new-bundle-format=false --use-signing-config=false` (required for rpm-ostree/bootc verification). Images are tagged `latest`, `latest.YYYYMMDD`, and `YYYYMMDD`. PRs build but never push. Action SHAs are bumped by Dependabot.
 
 **Disk image builds** (`build-disk.yml`): separate workflow using `bootc-image-builder` to produce ISO/QCOW2/raw from the OCI image. Configs live in `disk_config/` (`disk.toml` for qcow2/raw, `iso.toml` for the Anaconda ISO, which switches to `ghcr.io/montymalik/custom-ublue:latest`).
 
@@ -60,4 +63,5 @@ The build is a standard OCI/Containerfile build orchestrated by `just` locally a
 
 - The `cosign.key` file must **never** be committed — only `cosign.pub` is in the repo. The private key lives in the `SIGNING_SECRET` GitHub Actions secret.
 - Packages are installed with `dnf5` inside the container build (not on the host), so package changes go in `build/20-packages.sh`. Check whether the Bluefin base already ships a package before adding it.
-- The image name in `build.yml` defaults to the GitHub repository name (`IMAGE_NAME: "${{ github.event.repository.name }}"`).
+- The image name comes from `IMAGE_NAME` in `custom-ublue.env` and must match the GitHub repository name, which `build-disk.yml` still reads directly.
+- The Containerfile ends with `bootc container lint`; a build that fails there has produced an invalid bootc image and the lint output says why.
