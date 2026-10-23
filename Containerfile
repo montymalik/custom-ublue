@@ -20,6 +20,11 @@ RUN chmod +x /usr/share/custom-ublue/scripts/*.sh
 # Copy your custom Just commands to the system location
 COPY custom/ujust/setup.just /usr/share/ublue-os/just/60-custom.just
 
+# NetworkManager dispatcher script that opens the captive-portal login page in
+# niri sessions (GNOME Shell does this itself). NM only runs root-owned 0755
+# scripts, so set the mode explicitly instead of trusting the checkout.
+COPY --chmod=0755 custom/networkmanager/90-captive-portal /usr/lib/NetworkManager/dispatcher.d/90-captive-portal
+
 # 4. COPY BREW & FLATPAK LISTS
 # Bluefin's own Brewfiles live in /usr/share/ublue-os/homebrew/, so placing ours
 # there makes it show up in Bluefin's Brewfile picker. The flatpak list is only

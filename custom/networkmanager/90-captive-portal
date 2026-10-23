@@ -1,0 +1,56 @@
+#!/bin/bash
+# NetworkManager dispatcher script: open the captive-portal login page in
+# non-GNOME sessions (niri + DMS).
+#
+# NetworkManager's connectivity check (see
+# /usr/lib/NetworkManager/conf.d/20-connectivity-fedora.conf) notices when a
+# network redirects HTTP to a login page and reports CONNECTIVITY_STATE=PORTAL.
+# GNOME Shell listens for that over D-Bus and launches
+# gnome-shell-portal-helper, a small WebKit window showing the login page.
+# Niri and DMS have no such listener, so this script fills the gap by starting
+# the same helper inside the user's graphical session.
+#
+# Installed as /usr/lib/NetworkManager/dispatcher.d/90-captive-portal.
+# Must be root-owned, mode 0755, not group/world writable, or NM ignores it.
+
+set -euo pipefail
+
+ACTION="${2:-}"
+[[ "$ACTION" == "connectivity-change" ]] || exit 0
+[[ "${CONNECTIVITY_STATE:-}" == "PORTAL" ]] || exit 0
+
+HELPER=/usr/libexec/gnome-shell-portal-helper
+PROBE_URL="http://fedoraproject.org/static/hotspot.txt"
+
+[[ -x "$HELPER" ]] || exit 0
+
+# One helper window per active graphical session.
+while read -r session_id; do
+  [[ -n "$session_id" ]] || continue
+
+  state="$(loginctl show-session "$session_id" -p State --value)"
+  class="$(loginctl show-session "$session_id" -p Class --value)"
+  type="$(loginctl show-session "$session_id" -p Type --value)"
+  user="$(loginctl show-session "$session_id" -p Name --value)"
+  [[ "$state" == "active" && "$class" == "user" ]] || continue
+  [[ "$type" == "wayland" || "$type" == "x11" ]] || continue
+
+  # GNOME Shell handles portals itself; don't open a second window there.
+  if pgrep -u "$user" -x gnome-shell >/dev/null 2>&1; then
+    logger -t captive-portal "GNOME session for $user, leaving portal handling to gnome-shell"
+    continue
+  fi
+
+  # Run inside the user's systemd instance so it inherits WAYLAND_DISPLAY and
+  # friends, which niri-session imports into the user environment at startup.
+  # The fixed unit name doubles as a debounce: a second PORTAL event while the
+  # helper is still open fails to start another one.
+  logger -t captive-portal "opening portal helper for $user (session $session_id)"
+  systemd-run --machine="${user}@.host" --user \
+    --unit=captive-portal-helper --collect --quiet \
+    --description="Captive portal login" \
+    "$HELPER" "$PROBE_URL" ||
+    logger -t captive-portal "portal helper already running or failed to start for $user"
+done < <(loginctl list-sessions --no-legend | awk '{print $1}')
+
+exit 0

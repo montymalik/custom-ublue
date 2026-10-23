@@ -48,6 +48,7 @@ The build is a standard OCI/Containerfile build orchestrated by `just` locally a
 - `config/` → `/usr/share/custom-ublue/` (dotfiles for niri, alacritty, kitty, starship, fuzzel, fastfetch). The niri config includes the DMS-managed `~/.config/niri/dms/*.kdl` files; do not commit DMS-generated theme files (dank-theme.*), DMS regenerates them at runtime.
 - `scripts/` → `/usr/share/custom-ublue/scripts/` (install-doom.sh, install-lazyvim.sh)
 - `custom/ujust/setup.just` → `/usr/share/ublue-os/just/60-custom.just` (ujust commands available after boot)
+- `custom/networkmanager/90-captive-portal` → `/usr/lib/NetworkManager/dispatcher.d/` (opens `gnome-shell-portal-helper` in the user's session when NetworkManager reports a captive portal; GNOME Shell does this on its own, niri/DMS do not)
 - `custom/brew/Brewfile` → `/usr/share/ublue-os/homebrew/custom.Brewfile` (Homebrew packages: emacs, neovim, lazygit, mise, atuin, yazi, etc.; sits next to Bluefin's own Brewfiles)
 - `custom/flatpaks/flatpaks` → user flatpak list (Chrome, Podman Desktop)
 
